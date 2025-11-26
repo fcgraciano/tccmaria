@@ -6,12 +6,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $senha = $_POST['senha'];
 
-    $result = mysqli_query($conn, "SELECT * FROM usuarios WHERE email='$email'");
+    $result = mysqli_query($conn, "SELECT s.*, sa.id as salaoId FROM usuarios s inner join saloes sa on(sa.usuario_id = s.id) WHERE s.email='$email'");
+    //print_r($result);
     $user = mysqli_fetch_assoc($result);
-
+//print_r($user);
+//exit;
     if ($user && password_verify($senha, $user['senha']) && $user['tipo'] == 'cabeleireiro') {
         $_SESSION['id'] = $user['id'];
         $_SESSION['tipo'] = $user['tipo'];
+        $_SESSION['id_salao'] = $user['salaoId'];
         header("Location: dashboard_cabeleireiro.php");
         exit;
     } else {

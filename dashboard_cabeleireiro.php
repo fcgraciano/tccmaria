@@ -104,17 +104,26 @@ body {
 
 <script>
 // ========================== GRÁFICOS FICTÍCIOS ==========================
+async function  obterDados(){
+  const resp = await fetch("http://localhost/tccmaria/graficos/servicos_mes.php?id="+<?php echo $_SESSION['id_salao']; ?>)
+  const dados = await resp.json()
+  console.log(dados)
+  return dados
+}
+//get dados
 
+
+var dados = obterDados();
 // 1️⃣ Serviços realizados no mês
 const ctxServicos = document.getElementById('graficoServicos');
 new Chart(ctxServicos, {
   type: 'bar',
   data: {
-    labels: ['Corte', 'Coloração', 'Escova', 'Manicure', 'Penteado'],
+    labels: dados.servicos,
     datasets: [{
       label: 'Serviços Realizados',
-      data: [35, 20, 15, 10, 5],
-      backgroundColor: ['#a855f7', '#ec4899', '#38bdf8', '#facc15', '#10b981'],
+      data: dados.qtd,
+      //backgroundColor: ['#a855f7', '#ec4899', '#38bdf8', '#facc15', '#10b981'],
       borderRadius: 8
     }]
   },
