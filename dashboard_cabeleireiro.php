@@ -15,7 +15,7 @@ $id_usuario = $_SESSION['id'];
 <meta charset="UTF-8">
 <title>Dashboard do Cabeleireiro</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body {
   background: #f9f9fb;
@@ -101,36 +101,57 @@ body {
     </div>
   </div>
 </div>
-
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+
+
 // ========================== GRÁFICOS FICTÍCIOS ==========================
-async function  obterDados(){
+async function  obterQTD(){
   const resp = await fetch("http://localhost/tccmaria/graficos/servicos_mes.php?id="+<?php echo $_SESSION['id_salao']; ?>)
   const dados = await resp.json()
   console.log(dados)
-  return dados
+  return dados.qtd
 }
-//get dados
+
+async function  obterValores(){
+  const resp = await fetch("http://localhost/tccmaria/graficos/servicos_mes.php?id="+<?php echo $_SESSION['id_salao']; ?>)
+  const dados = await resp.json()
+  console.log(dados)
+  return dados.servicos
+}
+
+<?php 
+    $json = file_get_contents("http://localhost/tccmaria/graficos/servicos_mes.php?id=".$_SESSION['id_salao']);
+    $dados = json_decode($json, true); 
+    echo "const valores_grafico =". json_encode($dados["servicos"],JSON_UNESCAPED_UNICODE);
+    echo "\n";
+    echo "const qtd_grafico =".json_encode($dados["qtd"]);
+    
+    
+      
+?>
 
 
-var dados = obterDados();
+
 // 1️⃣ Serviços realizados no mês
 const ctxServicos = document.getElementById('graficoServicos');
 new Chart(ctxServicos, {
   type: 'bar',
   data: {
-    labels: dados.servicos,
+    labels: valores_grafico,
     datasets: [{
       label: 'Serviços Realizados',
-      data: dados.qtd,
+      data: qtd_grafico,
       borderRadius: 8
     }]
   }, options: {
-                responsive: true,
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
+    scales: {
+      y: { beginAtZero: true, title: { display: true, text: 'Quantidade' } }
+    },
+    plugins: {
+      legend: { display: false }
+    }
+  }
   
 });
 
