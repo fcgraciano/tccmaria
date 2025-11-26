@@ -2,23 +2,6 @@
 session_start();
 include 'conexao.php';
 
-if(isset($_SESSION['id']) && !empty($_SESSION['id']))
-{
-  if($_SESSION['tipo'] == 'cliente')
-  {
-    header("Location: dashboard_cliente.php");
-  }
-  else if($_SESSION['tipo'] == 'salao')
-  {
-    header("Location: dashboard_cabeleireiro.php");
-  }else{
-    echo $_SESSION['tipo'];
-  }
-}else{
-  print_r($_SESSION);
-}
-
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $senha = $_POST['senha'];
@@ -26,15 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = mysqli_query($conn, "SELECT * FROM usuarios WHERE email='$email'");
     $user = mysqli_fetch_assoc($result);
 
-    if ($user && password_verify($senha, $user['senha'])) {
+    if ($user && password_verify($senha, $user['senha']) && $user['tipo'] == 'cliente') {
         $_SESSION['id'] = $user['id'];
         $_SESSION['tipo'] = $user['tipo'];
-
-        if ($user['tipo'] == 'cliente') {
-            header("Location: dashboard_cliente.php");
-        } else {
-            header("Location: dashboard_cabeleireiro.php");
-        }
+        header("Location: dashboard_cliente.php");
         exit;
     } else {
         $erro = "Email ou senha incorretos";
@@ -46,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Login Cliente</title>
 
     <!-- ✅ Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -108,7 +86,6 @@ input {
   border: 1px solid #ddd;
   background: #fff;
   transition: all 0.2s ease;
-  font-size: 1rem;
 }
 
 input:focus {
@@ -199,7 +176,7 @@ p a:hover {
     <div class="card-login">
        <div class="header-logo">
     <img src="logo.png" alt="Logo do Salão">
-    <h2>Login</h2>
+    <h2>Login Cliente</h2>
 </div>
 
         <form method="POST">
@@ -212,7 +189,7 @@ p a:hover {
             <?php endif; ?>
         </form>
 
-        <p>Não tem uma conta? <a href="cadastro.php">Cadastre-se</a></p>
+        <p>Ainda não tem uma conta? <a href="cadastro_cliente.php">Cadastre-se</a></p>
     </div>
 
     <!-- ✅ Bootstrap JS -->

@@ -1,44 +1,15 @@
 <?php
-session_start();
 include 'conexao.php';
 
-if(isset($_SESSION['id']) && !empty($_SESSION['id']))
-{
-  if($_SESSION['tipo'] == 'cliente')
-  {
-    header("Location: dashboard_cliente.php");
-  }
-  else if($_SESSION['tipo'] == 'salao')
-  {
-    header("Location: dashboard_cabeleireiro.php");
-  }else{
-    echo $_SESSION['tipo'];
-  }
-}else{
-  print_r($_SESSION);
-}
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    $nome = $_POST['nome'];
     $email = $_POST['email'];
-    $senha = $_POST['senha'];
+    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+    $tipo = 'cliente';
 
-    $result = mysqli_query($conn, "SELECT * FROM usuarios WHERE email='$email'");
-    $user = mysqli_fetch_assoc($result);
-
-    if ($user && password_verify($senha, $user['senha'])) {
-        $_SESSION['id'] = $user['id'];
-        $_SESSION['tipo'] = $user['tipo'];
-
-        if ($user['tipo'] == 'cliente') {
-            header("Location: dashboard_cliente.php");
-        } else {
-            header("Location: dashboard_cabeleireiro.php");
-        }
-        exit;
-    } else {
-        $erro = "Email ou senha incorretos";
-    }
+    mysqli_query($conn, "INSERT INTO usuarios (nome,email,senha,tipo) VALUES ('$nome','$email','$senha','$tipo')");
+    header("Location: login_cliente.php");
+    exit;
 }
 ?>
 
@@ -46,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Cadastro Cliente</title>
 
     <!-- ✅ Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -75,7 +46,7 @@ body {
 }
 
 /* ====== CARD ====== */
-.card-login {
+.card-cadastro {
   width: 100%;
   max-width: 420px;
   background: #fff;
@@ -86,7 +57,7 @@ body {
   transition: transform 0.2s ease;
 }
 
-.card-login:hover {
+.card-cadastro:hover {
   transform: translateY(-3px);
 }
 
@@ -136,7 +107,7 @@ button:hover {
   box-shadow: 0 10px 26px rgba(108,92,231,.45);
 }
 
-/* ====== LINK CADASTRO ====== */
+/* ====== LINK LOGIN ====== */
 p {
   margin-top: 1.5rem;
   font-size: 0.95rem;
@@ -151,16 +122,6 @@ p a {
 
 p a:hover {
   text-decoration: underline;
-}
-
-/* ====== ERRO ====== */
-.erro {
-  color: #b91c1c;
-  font-weight: 500;
-  margin-top: 1rem;
-  background: #fee2e2;
-  border-radius: 0.6rem;
-  padding: 0.5rem;
 }
 /* ====== HEADER COM LOGO E TÍTULO ====== */
 .header-logo {
@@ -196,23 +157,20 @@ p a:hover {
 </head>
 <body>
 
-    <div class="card-login">
+    <div class="card-cadastro">
        <div class="header-logo">
     <img src="logo.png" alt="Logo do Salão">
-    <h2>Login</h2>
+    <h2>Cadastro Cliente</h2>
 </div>
 
         <form method="POST">
+            <input type="text" name="nome" placeholder="Nome completo" required>
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="senha" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
-
-            <?php if (isset($erro)): ?>
-                <div class="erro"><?= $erro; ?></div>
-            <?php endif; ?>
+            <button type="submit">Cadastrar</button>
         </form>
 
-        <p>Não tem uma conta? <a href="cadastro.php">Cadastre-se</a></p>
+        <p>Já tem uma conta? <a href="login_cliente.php">Entrar</a></p>
     </div>
 
     <!-- ✅ Bootstrap JS -->
