@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_cabeleireiro = mysqli_insert_id($conn);
 
         // Cria o salão vinculado
-        $query_salao = "INSERT INTO saloes (nome, endereco, telefone, id_cabeleireiro)
+        $query_salao = "INSERT INTO saloes (nome, endereco, telefone, usuario_id)
                         VALUES ('$nome_salao', '$endereco', '$telefone', '$id_cabeleireiro')";
         mysqli_query($conn, $query_salao);
 

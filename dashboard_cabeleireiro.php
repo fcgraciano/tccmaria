@@ -80,6 +80,7 @@ body {
           JOIN usuarios u ON a.id_usuario=u.id
           JOIN horarios h ON a.id_horario=h.id
           JOIN saloes s ON h.id_salao=s.id
+          where s.id = $_SESSION[id_salao]
           ORDER BY h.data,h.hora");
         
         if (mysqli_num_rows($res) == 0) {
@@ -105,24 +106,15 @@ body {
 <script>
 
 
-// ========================== GRÁFICOS FICTÍCIOS ==========================
-async function  obterQTD(){
-  const resp = await fetch("http://localhost/tccmaria/graficos/servicos_mes.php?id="+<?php echo $_SESSION['id_salao']; ?>)
-  const dados = await resp.json()
-  console.log(dados)
-  return dados.qtd
-}
-
-async function  obterValores(){
-  const resp = await fetch("http://localhost/tccmaria/graficos/servicos_mes.php?id="+<?php echo $_SESSION['id_salao']; ?>)
-  const dados = await resp.json()
-  console.log(dados)
-  return dados.servicos
-}
+// ========================== GRÁFICOS ==========================
 
 <?php 
-    $json = file_get_contents("http://localhost/tccmaria/graficos/servicos_mes.php?id=".$_SESSION['id_salao']);
-    $dados = json_decode($json, true); 
+$url_base =  $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'];
+
+    $json = file_get_contents($url_base."/tccmaria/graficos/servicos_mes.php?id=".$_SESSION['id_salao']);
+    $dados =json_decode($json, true); 
+   
+   
     echo "const valores_grafico =". json_encode($dados["servicos"],JSON_UNESCAPED_UNICODE);
     echo "\n";
     echo "const qtd_grafico =".json_encode($dados["qtd"]);
